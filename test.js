@@ -16,16 +16,16 @@ function fucking_move(player,direccion,eje){
         if( player.posx + direccion >=0 && (min_step)*(player.posx+direccion)<1){ 
             player.posx += direccion
             //player.x = app.screen.width*(min_step)*(player.posx) + app.screen.width*(player_offset)  ;
-            sprite.finalx = app.screen.width*(min_step)*(player.posx) + app.screen.width*(player_offset);
-            sprite.movingx = direccion
+            player.finalx = app.screen.width*(min_step)*(player.posx) + app.screen.width*(player_offset);
+            player.movingx = direccion
         }
     }
 
     if(eje == "y"){
         if( player.posy + direccion >=0 && (min_step)*(player.posy+direccion)<1){
             player.posy += direccion
-            sprite.finaly = app.screen.height*(min_step)*(player.posy) + app.screen.height*(player_offset)
-            sprite.movingy = direccion
+            player.finaly = app.screen.height*(min_step)*(player.posy) + app.screen.height*(player_offset)
+            player.movingy = direccion
         }
     }
 
@@ -48,6 +48,7 @@ for(; i*min_step < 1 ;i++){
 
 
 }
+
 const sprite = PIXI.Sprite.from('sprites/cubo.png');
 sprite.posx = 0
 sprite.posy = 0
@@ -57,6 +58,7 @@ sprite.anchor.set(0.5);
 sprite.x = app.screen.width*min_step/2;
 sprite.y = app.screen.height*min_step/2;
 
+//0 si no se mueve , 1 o -1 si se mueve segun la direccion
 sprite.movingx = 0
 sprite.movingy = 0
 
@@ -133,14 +135,11 @@ function keyboard(value) {
     return key;
   }
 
-
-
-
 //Capture the keyboard arrow keys
 
   app.ticker.add(delta => gameLoop(delta));
 
-function test(sprite){
+function move(sprite){
   if (sprite.movingx == 1){
       if (sprite.x < sprite.finalx){
           sprite.x += 2;
@@ -179,8 +178,10 @@ function test(sprite){
         sprite.movingy = 0
       }
     }
-
 }
+
+
+
 
 let left = keyboard("ArrowLeft"),
     up = keyboard("ArrowUp"),
@@ -197,7 +198,6 @@ function gameLoop(delta){
       fucking_move(sprite,1,"y")
   };
     
-
     
   right.press = () => {
       fucking_move(sprite,1,"x")
@@ -207,7 +207,7 @@ function gameLoop(delta){
     fucking_move(sprite,-1,"x")
   };
 
-  test(sprite)
+  move(sprite)
 
 
   }
