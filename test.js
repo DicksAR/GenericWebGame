@@ -4,9 +4,6 @@ document.body.appendChild(app.view);
 // Scale mode for all textures, will retain pixelation
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
-const sprite = PIXI.Sprite.from('sprites/cubo.png');
-sprite.posx = 0
-sprite.posy = 0
 
 const min_step = 0.1  //cada movimiento va a ser un 10% de la pantalla 
 //const player_offset = min_step + min_step/2 //offset para que quede centrado el mogolico en la grilla
@@ -18,19 +15,23 @@ function fucking_move(player,direccion,eje){
         //checkea colision con los bordes
         if( player.posx + direccion >=0 && (min_step)*(player.posx+direccion)<1){ 
             player.posx += direccion
-            player.x = app.screen.width*(min_step)*(player.posx) + app.screen.width*(player_offset)  ;
+            //player.x = app.screen.width*(min_step)*(player.posx) + app.screen.width*(player_offset)  ;
+            sprite.finalx = app.screen.width*(min_step)*(player.posx) + app.screen.width*(player_offset);
+            sprite.movingx = direccion
         }
     }
 
     if(eje == "y"){
         if( player.posy + direccion >=0 && (min_step)*(player.posy+direccion)<1){
             player.posy += direccion
-            player.y = app.screen.height*(min_step)*(player.posy) + app.screen.height*(player_offset)
+            sprite.finaly = app.screen.height*(min_step)*(player.posy) + app.screen.height*(player_offset)
+            sprite.movingy = direccion
         }
     }
 
 }
 
+//hace la grilla en base al minstep
 let i = 1
 for(; i*min_step < 1 ;i++){
     let rectangle = new PIXI.Graphics();
@@ -47,12 +48,22 @@ for(; i*min_step < 1 ;i++){
 
 
 }
-
+const sprite = PIXI.Sprite.from('sprites/cubo.png');
+sprite.posx = 0
+sprite.posy = 0
 
 // Set the initial position
 sprite.anchor.set(0.5);
 sprite.x = app.screen.width*min_step/2;
 sprite.y = app.screen.height*min_step/2;
+
+sprite.movingx = 0
+sprite.movingy = 0
+
+sprite.finalx = sprite.x
+sprite.finaly = sprite.y
+
+
 
 // Opt-in to interactivity
 sprite.interactive = true;
@@ -126,29 +137,80 @@ function keyboard(value) {
 
 
 //Capture the keyboard arrow keys
+
+  app.ticker.add(delta => gameLoop(delta));
+
+function test(sprite){
+  if (sprite.movingx == 1){
+      if (sprite.x < sprite.finalx){
+          sprite.x += 2;
+      }
+      else if (sprite.x >= sprite.finalx){
+        sprite.x = sprite.finalx
+        sprite.movingx = 0
+      }
+    }
+      else if (sprite.movingx == -1){
+        if (sprite.x > sprite.finalx){
+          sprite.x -= 2;
+      }
+      else if (sprite.x <= sprite.finalx){
+        sprite.x = sprite.finalx
+        sprite.movingx = 0
+      }
+  }
+
+  if (sprite.movingy == 1){
+      if (sprite.y < sprite.finaly){
+          sprite.y += 2;
+      }
+
+      else if (sprite.y >= sprite.finaly){
+        sprite.y = sprite.finaly
+        sprite.movingy = 0
+      }
+    }
+      else if (sprite.movingy == -1){
+        if (sprite.y > sprite.finaly){
+          sprite.y -= 2;
+      }
+      else if (sprite.y <= sprite.finaly){
+        sprite.y = sprite.finaly
+        sprite.movingy = 0
+      }
+    }
+
+}
+
 let left = keyboard("ArrowLeft"),
     up = keyboard("ArrowUp"),
     right = keyboard("ArrowRight"),
     down = keyboard("ArrowDown");
 
-    left.press = () => {
-        fucking_move(sprite,-1,"x")
-      };
-    
-    
-    right.press = () => {
-        fucking_move(sprite,1,"x")
+function gameLoop(delta){
+  up.press = () => {
+    fucking_move(sprite,-1,"y")
     };
     
-
-    up.press = () => {
-        fucking_move(sprite,-1,"y")
-      };
     
-    
-    down.press = () => {
-        fucking_move(sprite,1,"y")
-    };
+  down.press = () => {
+      fucking_move(sprite,1,"y")
+  };
     
 
+    
+  right.press = () => {
+      fucking_move(sprite,1,"x")
+  };
+  
+  left.press = () => {
+    fucking_move(sprite,-1,"x")
+  };
 
+  test(sprite)
+
+
+  }
+
+  gameLoop();
+  
