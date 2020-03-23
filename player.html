@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <script>
+            window.addEventListener('load', main)
+            
+            function main() {
+                setInterval(getStatus, 200)
+            }
+        
+            function getStatus() {
+                xhttp = new XMLHttpRequest()
+                xhttp.addEventListener("load", updateStatus);
+                xhttp.open("GET", "/join", true);
+                console.log("sending to /join")
+                xhttp.timeout = 200
+                xhttp.send();
+            }
+        
+            function updateStatus() {
+                document.body.innerHTML = this.responseText
+            }
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
